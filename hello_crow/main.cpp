@@ -5,8 +5,18 @@ int main (int argc, char *argv[])
 {
     crow::SimpleApp app;
     
-    CROW_ROUTE(app, "/")([](){
-        return "<div><h1>Hello, Habbes!</h1></div>";
+    CROW_ROUTE(app, "/")([](const crow::request &req, crow::response &res){
+        std::ifstream in("../public/index.html", std::ifstream::in);
+        if (in) {
+            std::ostringstream contents;
+            contents << in.rdbuf();
+            in.close();
+            res.write(contents.str());
+        }
+        else {
+            res.write("Not found.");
+        }
+        res.end();
     });
 
     char *port = std::getenv("PORT");
